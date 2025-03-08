@@ -11,15 +11,19 @@ function App() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   const movieData = async (movie) => {
+
     try {
       const BASE_URL = `http://www.omdbapi.com/?i=tt3896198&apikey=dcbc1f23&t=${movie}&plot=full`;
+
       const response = await axios.get(BASE_URL);
       console.log("Response Status:", response.status);
       console.log("Response Data:", response.data);
       setData(response.data);
       setLoading(false);
+
     } catch (error) {
       console.error("Error occurred during API call:", error);
       setError(error);
@@ -27,13 +31,14 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    movieData("the dark knight");
-  }, []);
+  const handleSearchSubmit = () => {
+    setLoading(true);
+    movieData(search);
+  };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    movieData("Kung Fu Panda")
+  }, [])
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -41,7 +46,7 @@ function App() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar search={search} setSearch={setSearch} onSearchSubmit={handleSearchSubmit} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/favorites" element={<Favorites />} />
